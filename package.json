@@ -1,6 +1,6 @@
 {
   "name": "@aalin/fuzzysearch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "scripts": {
     "test": "tape -r babel-register test.js | tap-spec",
