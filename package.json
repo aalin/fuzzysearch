@@ -1,14 +1,21 @@
 {
-  "name": "fuzzysearch",
+  "name": "@aalin/fuzzysearch",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "tape -r babel-register test.js | tap-spec"
+    "test": "tape -r babel-register test.js | tap-spec",
+    "build": "babel -d dist src/",
+    "prepublish": "npm run build"
   },
   "author": "Andreas Alin <andreas.alin@gmail.com>",
   "license": "BSD-2-Clause",
   "description": "",
-  "dependencies": { },
+  "files": [
+    "dist/"
+  ],
+  "dependencies": {
+    "babel-cli": "^6.16.0"
+  },
   "devDependencies": {
     "babel-core": "^6.17.0",
     "babel-preset-es2015": "^6.16.0",

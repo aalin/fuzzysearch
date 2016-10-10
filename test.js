@@ -1,5 +1,5 @@
 import test from 'tape';
-import * as fuzzylib from './index';
+import * as fuzzylib from './src/index';
 
 test('findCharIndexes', (t) => {
   t.deepEqual(fuzzylib.findCharIndexes('f', 'foxfoo'), [0, 3]);
