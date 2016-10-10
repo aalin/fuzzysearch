@@ -121,7 +121,7 @@ function fuzzysearchSync(search, words) {
 
   const matches = words
     .reduce((arr, word) => {
-      const match = fuzzymatch(search, normalizedSearch, new Word(word));
+      const match = fuzzymatch(search, normalizedSearch, word);
       return match ? arr.concat(match) : arr;
     }, []);
 
@@ -141,12 +141,27 @@ function asyncReduce([first, ...rest], fn, acc, index = 0) {
   });
 }
 
-export default
+export
 function fuzzysearch(search, words) {
   const normalizedSearch = search.toLowerCase();
 
   return asyncReduce(words, (next, arr, word) => {
-    const match = fuzzymatch(search, normalizedSearch, new Word(word));
+    const match = fuzzymatch(search, normalizedSearch, word);
     next(match ? arr.concat(match) : arr);
   }, []).then(sortMatches);
+}
+
+export default
+class Fuzzysearch {
+  constructor(words) {
+    this._words = words.map((word) => new Word(word));
+  }
+
+  search(str) {
+    return fuzzysearch(str, this._words);
+  }
+
+  searchSync(str) {
+    return fuzzysearchSync(str, this._words);
+  }
 }

@@ -69,6 +69,17 @@ test('fuzzymatch', (t) => {
 
 test('fuzzysearchSync', (t) => {
   const words = [
+  ];
+
+
+
+  t.end();
+});
+
+test('Fuzzysearch', (t) => {
+  const Fuzzysearch = fuzzylib.default;
+
+  const fuzzysearch = new Fuzzysearch([
     'foo Foo bar',
     'foo foo bar',
     'bfooFoo bar',
@@ -77,11 +88,9 @@ test('fuzzysearchSync', (t) => {
     'xfxOxO',
     'xfxoxo',
     'fasdasdo'
-  ];
+  ]);
 
-  const result = fuzzylib.fuzzysearchSync('Foo', words);
-
-  t.deepEqual(result.map((res) => res.word), [
+  const expected = [
     'foo Foo bar',
     'bfooFoo bar',
     'bfoo foo bar',
@@ -89,15 +98,21 @@ test('fuzzysearchSync', (t) => {
     'xfxoxo',
     'xFxOxO',
     'xfxOxO',
-  ]);
+  ];
+
+  t.test('search', (t) => {
+    t.plan(1);
+
+    fuzzysearch.search('Foo').then((results) => {
+      t.deepEqual(results.map((match) => match.word), expected);
+    });
+  });
+
+  t.test('searchSync', (t) => {
+    const results = fuzzysearch.searchSync('Foo');
+    t.deepEqual(results.map((match) => match.word), expected);
+    t.end();
+  });
 
   t.end();
-});
-
-test('fuzzysearch', (t) => {
-  t.plan(1);
-
-  fuzzylib.default('foo', ['foobar', 'foxoobar']).then((results) => {
-    t.deepEqual(results.map((match) => match.word), ['foobar', 'foxoobar']);
-  });
 });
