@@ -21,7 +21,7 @@ Usage:
       'fasdasdo'
     ];
 
-    fuzzysearch('foo', words).then((results) => {
+    fuzzysearch('Foo', words).then((results) => {
       /* results is now:
         [
           { word: 'foo Foo bar', indexes: [ 4, 5, 6 ], score: 24 },
