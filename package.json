@@ -1,6 +1,6 @@
 {
   "name": "@aalin/fuzzysearch",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "scripts": {
     "test": "tape -r babel-register test.js | tap-spec",
@@ -14,8 +14,8 @@
     "dist/"
   ],
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/aalin/fuzzysearch.git"
+    "type": "git",
+    "url": "https://github.com/aalin/fuzzysearch.git"
   },
   "dependencies": {},
   "devDependencies": {
