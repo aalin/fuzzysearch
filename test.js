@@ -92,9 +92,9 @@ test('Fuzzysearch', (t) => {
 
   const expected = [
     'foo Foo bar',
+    'foo foo bar',
     'bfooFoo bar',
     'bfoo foo bar',
-    'foo foo bar',
     'xfxoxo',
     'xFxOxO',
     'xfxOxO',

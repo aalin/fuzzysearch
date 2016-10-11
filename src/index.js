@@ -19,10 +19,7 @@ function getCharIndexes(search, word) {
 }
 
 export
-function findMatches(search, word, charIndexes, indexes, list) {
-  indexes = indexes || [];
-  list = list || [];
-
+function findMatches(search, word, charIndexes, indexes = [], list = []) {
   const prevIndex = indexes.slice(-1)[0] || -1;
   const ch = search[indexes.length];
 
@@ -42,13 +39,13 @@ function findMatches(search, word, charIndexes, indexes, list) {
 export
 function calculateScore(search, word, indexes) {
   let score = 0.0;
-  let prevIndex = 0;
+  let prevIndex = -1;
   let consecutiveCount = 1;
 
   indexes.forEach((index, i) => {
     score += word.matchValue(index, search[i]);
 
-    if (prevIndex + 1 === index) {
+    if (index !== 0 && prevIndex + 1 === index) {
       consecutiveCount++;
     }
 
@@ -66,6 +63,7 @@ class Word {
     this.length = orig.length;
     this.orig = orig;
     this.normal = orig.toLowerCase();
+
     this.weights = Array.from(orig, (_, index) => {
       if (index === 0 || WORD_START_CHARS.indexOf(orig[index - 1]) !== -1) {
         return 2.0;
