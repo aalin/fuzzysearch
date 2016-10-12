@@ -19,7 +19,7 @@ function getCharIndexes(search, word) {
 }
 
 export
-function findMatches(search, word, charIndexes, indexes = [], list = []) {
+function findMatches(search, charIndexes, indexes = [], list = []) {
   const prevIndex = indexes.slice(-1)[0] || -1;
   const ch = search[indexes.length];
 
@@ -32,7 +32,7 @@ function findMatches(search, word, charIndexes, indexes = [], list = []) {
       return l;
     }
 
-    return findMatches(search, word, charIndexes, indexes.concat(idx), l);
+    return findMatches(search, charIndexes, indexes.concat(idx), l);
   }, list);
 }
 
@@ -94,7 +94,7 @@ function fuzzymatch(search, normalizedSearch, word, index) {
 
   if (!charIndexes) { return; }
 
-  return findMatches(normalizedSearch, word.normal, charIndexes)
+  return findMatches(normalizedSearch, charIndexes)
     .map((indexes) => {
       return {
         word: word.orig,
