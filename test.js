@@ -38,23 +38,16 @@ test('findMatches', (t) => {
 
 test('calculateScore', (t) => {
   const word = new fuzzylib.Word('foxfoo');
-  t.equal(fuzzylib.calculateScore('foo', word, [0, 1, 4]), 16, 'calculates a score');
-  t.equal(fuzzylib.calculateScore('foo', word, [3, 4, 5]), 18, 'returns a higher score for consecutive characters');
+  t.equal(fuzzylib.calculateScore('foo', word, [0, 1, 4]), 36, 'calculates a score');
+  t.equal(fuzzylib.calculateScore('foo', word, [3, 4, 5]), 42, 'returns a higher score for consecutive characters');
   t.end();
 });
 
 test('Word', (t) => {
   const word = new fuzzylib.Word('foo bar');
 
-  t.test('beginning of word', (t) => {
-    t.equal(word.matchValue(4, 'b'), 4, 'returns a higher score for the exact same match');
-    t.equal(word.matchValue(4, 'B'), 2, 'returns a lower score when there is no exact match');
-    t.end();
-  });
-
-  t.test('middle of word', (t) => {
-    t.equal(word.matchValue(1, 'o'), 2, 'returns a higher score for the exact same match');
-    t.equal(word.matchValue(1, 'O'), 1, 'returns a lower score when there is no exact match');
+  t.test('word starts', (t) => {
+    t.deepEqual(word.wordStarts, [true, false, false, false, true, false, false]);
     t.end();
   });
 
@@ -67,34 +60,25 @@ test('fuzzymatch', (t) => {
   t.end();
 });
 
-test('fuzzysearchSync', (t) => {
-  const words = [
-  ];
-
-
-
-  t.end();
-});
-
 test('Fuzzysearch', (t) => {
   const Fuzzysearch = fuzzylib.default;
 
   const fuzzysearch = new Fuzzysearch([
+    'xfxoxo',
     'foo Foo bar',
-    'foo foo bar',
-    'bfooFoo bar',
+    'fasdasdo',
     'bfoo foo bar',
     'xFxOxO',
+    'foo foo bar',
     'xfxOxO',
-    'xfxoxo',
-    'fasdasdo'
+    'bfooFoo bar',
   ]);
 
   const expected = [
     'foo Foo bar',
     'foo foo bar',
-    'bfooFoo bar',
     'bfoo foo bar',
+    'bfooFoo bar',
     'xfxoxo',
     'xFxOxO',
     'xfxOxO',

@@ -41,15 +41,27 @@ function calculateScore(search, word, indexes) {
   let score = 0.0;
   let prevIndex = -1;
   let consecutiveCount = 1;
+  let isInWord = false;
 
   indexes.forEach((index, i) => {
-    score += word.matchValue(index, search[i]);
+    const ch =  search[i];
+    const isConsecutive = index !== 0 && prevIndex + 1 === index;
+    const isWordStart = word.wordStarts[index];
 
-    if (index !== 0 && prevIndex + 1 === index) {
-      consecutiveCount++;
-    }
+    let value = 1;
+
+    // Consecutive
+    if (isInWord && isConsecutive) { value += 2; }
+    // Equal case
+    if (word.orig[index] === ch) { value += 3; }
+    if (isWordStart) { value += 2; }
+    if (index === 0) { value += 2; }
+
+    if (isConsecutive) { consecutiveCount++; }
 
     prevIndex = index;
+    isInWord = isWordStart || isConsecutive;
+    score += value;
   });
 
   return score * consecutiveCount;
@@ -64,28 +76,18 @@ class Word {
     this.orig = orig;
     this.normal = orig.toLowerCase();
 
-    this.weights = Array.from(orig, (_, index) => {
+    this.wordStarts = Array.from(orig, (_, index) => {
       if (index === 0 || WORD_START_CHARS.indexOf(orig[index - 1]) !== -1) {
-        return 2.0;
+        return true;
       }
 
-      return 1.0;
+      return false;
     });
-  }
-
-  matchValue(index, ch) {
-    const weight = this.weights[index];
-
-    if (this.orig[index] === ch) {
-      return weight * 2.0;
-    }
-
-    return weight;
   }
 }
 
 export
-function fuzzymatch(search, normalizedSearch, word) {
+function fuzzymatch(search, normalizedSearch, word, index) {
   if (search.length > word.length) { return; }
 
   const charIndexes = getCharIndexes(normalizedSearch, word.normal);
@@ -97,7 +99,8 @@ function fuzzymatch(search, normalizedSearch, word) {
       return {
         word: word.orig,
         indexes,
-        score: calculateScore(search, word, indexes)
+        score: calculateScore(search, word, indexes),
+        index
       };
     })
     .sort((a, b) => b.score - a.score)[0];
@@ -118,8 +121,8 @@ function fuzzysearchSync(search, words) {
   const normalizedSearch = search.toLowerCase();
 
   const matches = words
-    .reduce((arr, word) => {
-      const match = fuzzymatch(search, normalizedSearch, word);
+    .reduce((arr, word, i) => {
+      const match = fuzzymatch(search, normalizedSearch, word, i);
       return match ? arr.concat(match) : arr;
     }, []);
 
@@ -143,8 +146,8 @@ export
 function fuzzysearch(search, words) {
   const normalizedSearch = search.toLowerCase();
 
-  return asyncReduce(words, (next, arr, word) => {
-    const match = fuzzymatch(search, normalizedSearch, word);
+  return asyncReduce(words, (next, arr, word, index) => {
+    const match = fuzzymatch(search, normalizedSearch, word, index);
     next(match ? arr.concat(match) : arr);
   }, []).then(sortMatches);
 }
