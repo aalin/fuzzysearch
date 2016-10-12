@@ -15,7 +15,7 @@ test('getCharIndexes', (t) => {
   t.deepEqual(charIndexes, {
     f: [0, 3],
     o: [1, 4, 5]
-  })
+  }, 'returns an object with each character mapped to an array with their indexes')
 
   t.end();
 });
@@ -38,16 +38,24 @@ test('findMatches', (t) => {
 
 test('calculateScore', (t) => {
   const word = new fuzzylib.Word('foxfoo');
-  t.equal(fuzzylib.calculateScore('foo', word, [0, 1, 4]), 36, 'calculates a score');
-  t.equal(fuzzylib.calculateScore('foo', word, [3, 4, 5]), 42, 'returns a higher score for consecutive characters');
+  t.ok(
+    fuzzylib.calculateScore('foo', word, [3, 4, 5])
+    >
+    fuzzylib.calculateScore('foo', word, [0, 1, 4]),
+    'calcaulates a higher score for consecutive characters'
+  );
   t.end();
 });
 
 test('Word', (t) => {
   const word = new fuzzylib.Word('foo bar');
 
-  t.test('word starts', (t) => {
-    t.deepEqual(word.wordStarts, [true, false, false, false, true, false, false]);
+  t.test('.wordStarts', (t) => {
+    t.deepEqual(
+      word.wordStarts,
+      [true, false, false, false, true, false, false],
+      'is an array with booleans saying which character starts a word'
+    );
     t.end();
   });
 
@@ -56,7 +64,11 @@ test('Word', (t) => {
 
 test('fuzzymatch', (t) => {
   const word = new fuzzylib.Word('foxfoo');
-  t.deepEqual(fuzzylib.fuzzymatch('foo', 'foo', word).indexes, [3, 4, 5]);
+  t.deepEqual(
+    fuzzylib.fuzzymatch('foo', 'foo', word).indexes,
+    [3, 4, 5],
+    'finds the best match'
+  );
   t.end();
 });
 
@@ -88,13 +100,13 @@ test('Fuzzysearch', (t) => {
     t.plan(1);
 
     fuzzysearch.search('Foo').then((results) => {
-      t.deepEqual(results.map((match) => match.word), expected);
+      t.deepEqual(results.map((match) => match.word), expected, 'returns a promise that resolves with the matches');
     });
   });
 
   t.test('searchSync', (t) => {
     const results = fuzzysearch.searchSync('Foo');
-    t.deepEqual(results.map((match) => match.word), expected);
+    t.deepEqual(results.map((match) => match.word), expected, 'returns the matches');
     t.end();
   });
 
