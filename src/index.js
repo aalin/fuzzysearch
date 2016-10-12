@@ -1,14 +1,14 @@
 export
-function findCharIndexes(ch, word) {
-  return Array.from(word, (_, i) => i).filter((i) => word[i] == ch);
+function findCharIndexes(ch, str) {
+  return Array.from(str, (_, i) => i).filter((i) => str[i] == ch);
 }
 
 export
-function getCharIndexes(search, word) {
-  return Array.from(search).reduce((obj, ch) => {
+function getCharIndexes(chars, str) {
+  return Array.from(chars).reduce((obj, ch) => {
     if (!obj || obj[ch]) { return obj; }
 
-    const indexes = findCharIndexes(ch, word);
+    const indexes = findCharIndexes(ch, str);
 
     if (!indexes.length) { return; }
 
@@ -37,7 +37,7 @@ function findMatches(search, charIndexes, indexes = [], list = []) {
 }
 
 export
-function calculateScore(search, word, indexes) {
+function calculateScore(search, entry, indexes) {
   let score = 0.0;
   let prevIndex = -1;
   let consecutiveCount = 1;
@@ -46,14 +46,14 @@ function calculateScore(search, word, indexes) {
   indexes.forEach((index, i) => {
     const ch =  search[i];
     const isConsecutive = index !== 0 && prevIndex + 1 === index;
-    const isWordStart = word.wordStarts[index];
+    const isWordStart = entry.wordStarts[index];
 
     let value = 1;
 
     // Consecutive
     if (isInWord && isConsecutive) { value += 2; }
     // Equal case
-    if (word.orig[index] === ch) { value += 3; }
+    if (entry.str[index] === ch) { value += 3; }
     if (isWordStart) { value += 2; }
     if (index === 0) { value += 2; }
 
@@ -70,14 +70,14 @@ function calculateScore(search, word, indexes) {
 const WORD_START_CHARS = [' ', '/', '-', '_', '.'];
 
 export
-class Word {
-  constructor(orig) {
-    this.length = orig.length;
-    this.orig = orig;
-    this.normal = orig.toLowerCase();
+class Entry {
+  constructor(str) {
+    this.length = str.length;
+    this.str = str;
+    this.normal = str.toLowerCase();
 
-    this.wordStarts = Array.from(orig, (_, index) => {
-      if (index === 0 || WORD_START_CHARS.indexOf(orig[index - 1]) !== -1) {
+    this.wordStarts = Array.from(str, (_, index) => {
+      if (index === 0 || WORD_START_CHARS.indexOf(str[index - 1]) !== -1) {
         return true;
       }
 
@@ -87,19 +87,19 @@ class Word {
 }
 
 export
-function fuzzymatch(search, normalizedSearch, word, index) {
-  if (search.length > word.length) { return; }
+function fuzzymatch(search, normalizedSearch, entry, index) {
+  if (search.length > entry.length) { return; }
 
-  const charIndexes = getCharIndexes(normalizedSearch, word.normal);
+  const charIndexes = getCharIndexes(normalizedSearch, entry.normal);
 
   if (!charIndexes) { return; }
 
   return findMatches(normalizedSearch, charIndexes)
     .map((indexes) => {
       return {
-        word: word.orig,
+        string: entry.str,
         indexes,
-        score: calculateScore(search, word, indexes),
+        score: calculateScore(search, entry, indexes),
         index
       };
     })
@@ -109,7 +109,7 @@ function fuzzymatch(search, normalizedSearch, word, index) {
 function sortMatches(matches) {
   return matches.sort((a, b) => {
     if (b.score === a.score) {
-      return a.word - b.word;
+      return a.string - b.string;
     }
 
     return b.score - a.score;
@@ -117,12 +117,12 @@ function sortMatches(matches) {
 }
 
 export
-function fuzzysearchSync(search, words) {
+function fuzzysearchSync(search, entries) {
   const normalizedSearch = search.toLowerCase();
 
-  const matches = words
-    .reduce((arr, word, i) => {
-      const match = fuzzymatch(search, normalizedSearch, word, i);
+  const matches = entries
+    .reduce((arr, entry, i) => {
+      const match = fuzzymatch(search, normalizedSearch, entry, i);
       return match ? arr.concat(match) : arr;
     }, []);
 
@@ -143,26 +143,26 @@ function asyncReduce([first, ...rest], fn, acc, index = 0) {
 }
 
 export
-function fuzzysearch(search, words) {
+function fuzzysearch(search, entries) {
   const normalizedSearch = search.toLowerCase();
 
-  return asyncReduce(words, (next, arr, word, index) => {
-    const match = fuzzymatch(search, normalizedSearch, word, index);
+  return asyncReduce(entries, (next, arr, entry, index) => {
+    const match = fuzzymatch(search, normalizedSearch, entry, index);
     next(match ? arr.concat(match) : arr);
   }, []).then(sortMatches);
 }
 
 export default
 class Fuzzysearch {
-  constructor(words) {
-    this._words = words.map((word) => new Word(word));
+  constructor(entries) {
+    this._entries = entries.map((entry) => new Entry(entry));
   }
 
   search(str) {
-    return fuzzysearch(str, this._words);
+    return fuzzysearch(str, this._entries);
   }
 
   searchSync(str) {
-    return fuzzysearchSync(str, this._words);
+    return fuzzysearchSync(str, this._entries);
   }
 }

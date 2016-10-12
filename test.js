@@ -21,7 +21,7 @@ test('getCharIndexes', (t) => {
 });
 
 test('findMatches', (t) => {
-  const matches = fuzzylib.findMatches('foo', 'foxfoo', {
+  const matches = fuzzylib.findMatches('foo', {
     f: [0, 3],
     o: [1, 4, 5]
   });
@@ -37,7 +37,7 @@ test('findMatches', (t) => {
 });
 
 test('calculateScore', (t) => {
-  const word = new fuzzylib.Word('foxfoo');
+  const word = new fuzzylib.Entry('foxfoo');
   t.ok(
     fuzzylib.calculateScore('foo', word, [3, 4, 5])
     >
@@ -47,8 +47,8 @@ test('calculateScore', (t) => {
   t.end();
 });
 
-test('Word', (t) => {
-  const word = new fuzzylib.Word('foo bar');
+test('Entry', (t) => {
+  const word = new fuzzylib.Entry('foo bar');
 
   t.test('.wordStarts', (t) => {
     t.deepEqual(
@@ -63,7 +63,7 @@ test('Word', (t) => {
 });
 
 test('fuzzymatch', (t) => {
-  const word = new fuzzylib.Word('foxfoo');
+  const word = new fuzzylib.Entry('foxfoo');
   t.deepEqual(
     fuzzylib.fuzzymatch('foo', 'foo', word).indexes,
     [3, 4, 5],
@@ -100,13 +100,13 @@ test('Fuzzysearch', (t) => {
     t.plan(1);
 
     fuzzysearch.search('Foo').then((results) => {
-      t.deepEqual(results.map((match) => match.word), expected, 'returns a promise that resolves with the matches');
+      t.deepEqual(results.map((match) => match.string), expected, 'returns a promise that resolves with the matches');
     });
   });
 
   t.test('searchSync', (t) => {
     const results = fuzzysearch.searchSync('Foo');
-    t.deepEqual(results.map((match) => match.word), expected, 'returns the matches');
+    t.deepEqual(results.map((match) => match.string), expected, 'returns the matches');
     t.end();
   });
 
