@@ -36,6 +36,26 @@ function findMatches(search, charIndexes, indexes = [], list = []) {
   }, list);
 }
 
+function getRanges(array) {
+  const ranges = [];
+  let start;
+  let end;
+
+  for (var i = 0; i < array.length; i++) {
+    start = array[i];
+    end = start;
+
+    while (array[i + 1] - array[i] == 1) {
+      end = array[i + 1];
+      i++;
+    }
+
+    ranges.push([start, end]);
+  }
+
+  return ranges;
+}
+
 export
 function calculateScore(search, entry, indexes) {
   let score = 0.0;
@@ -98,7 +118,8 @@ function fuzzymatch(search, normalizedSearch, entry, index) {
     .map((indexes) => {
       return {
         string: entry.str,
-        indexes,
+        ranges: getRanges(indexes),
+        indexes: indexes,
         score: calculateScore(search, entry, indexes),
         index
       };
