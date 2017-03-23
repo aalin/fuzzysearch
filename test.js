@@ -100,13 +100,21 @@ test('Fuzzysearch', (t) => {
     t.plan(1);
 
     fuzzysearch.search('Foo').then((results) => {
-      t.deepEqual(results.map((match) => match.string), expected, 'returns a promise that resolves with the matches');
+      t.deepEqual(
+        results.map((match) => match.string),
+        expected,
+        'returns a promise that resolves with the matches'
+      );
     });
   });
 
   t.test('searchSync', (t) => {
     const results = fuzzysearch.searchSync('Foo');
-    t.deepEqual(results.map((match) => match.string), expected, 'returns the matches');
+    t.deepEqual(
+      results.map((match) => match.string),
+      expected,
+      'returns the matches'
+    );
     t.end();
   });
 
