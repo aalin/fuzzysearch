@@ -106,6 +106,20 @@ class Entry {
 }
 
 export
+class Result {
+  constructor(search, index, entry, indexes) {
+    this.index = index;
+    this.string = entry.str;
+    this.indexes = indexes;
+    this.score = calculateScore(search, entry, indexes);
+  }
+
+  getRanges() {
+    return getRanges(this.indexes);
+  }
+}
+
+export
 function fuzzymatch(search, normalizedSearch, entry, index) {
   if (search.length > entry.length) { return; }
 
@@ -115,13 +129,7 @@ function fuzzymatch(search, normalizedSearch, entry, index) {
 
   return findMatches(normalizedSearch, charIndexes)
     .map((indexes) => {
-      return {
-        string: entry.str,
-        ranges: getRanges(indexes),
-        indexes: indexes,
-        score: calculateScore(search, entry, indexes),
-        index
-      };
+      return new Result(search, index, entry, indexes);
     })
     .sort((a, b) => b.score - a.score)[0];
 }
