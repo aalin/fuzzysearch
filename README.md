@@ -1,8 +1,8 @@
 # @aalin/fuzzysearch
 
-Clever fuzzysearcher.
+Clever and fast async fuzzy searcher.
 
-After looking for a good fuzzy searcher, and I couldn't find one, I decided to write my own.
+After looking for a good fuzzy matcher, and I couldn't find one, I decided to write my own.
 
 Install:
 
