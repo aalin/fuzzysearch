@@ -36,14 +36,13 @@ function findMatches(search, charIndexes, indexes = [], list = []) {
   }, list);
 }
 
+export
 function getRanges(array) {
   const ranges = [];
-  let start;
-  let end;
 
   for (var i = 0; i < array.length; i++) {
-    start = array[i];
-    end = start;
+    const start = array[i];
+    let end = start;
 
     while (array[i + 1] - array[i] == 1) {
       end = array[i + 1];
